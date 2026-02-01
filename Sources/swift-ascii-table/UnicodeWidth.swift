@@ -40,8 +40,13 @@ extension String {
             else if scalar.properties.isNoncharacterCodePoint {
                 width += 0
             }
-            // Most emoji are multi-byte and should count as 2
-            else if (0x1F300...0x1F9FF).contains(value) {  // Emoji ranges
+            // Emoji ranges - various Unicode blocks containing emoji
+            else if (0x1F300...0x1F9FF).contains(value) ||  // Emoticons, symbols, pictographs
+                    (0x2600...0x26FF).contains(value) ||    // Miscellaneous Symbols (⚠️, ☀️, etc.)
+                    (0x2700...0x27BF).contains(value) ||    // Dingbats
+                    (0x1F000...0x1F02F).contains(value) ||  // Mahjong tiles, Domino tiles
+                    (0x1F0A0...0x1F0FF).contains(value) ||  // Playing cards
+                    (0x1FA00...0x1FAFF).contains(value) {   // Extended pictographs
                 width += 2
             }
             // Standard ASCII and most other characters
