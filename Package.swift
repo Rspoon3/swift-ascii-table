@@ -17,6 +17,10 @@ let package = Package(
             name: "ANSIColorExample",
             targets: ["ANSIColorExample"]
         ),
+        .executable(
+            name: "SortingExamples",
+            targets: ["SortingExamples"]
+        ),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-testing.git", branch: "main")
@@ -31,6 +35,12 @@ let package = Package(
             dependencies: ["ASCIITable"],
             path: "Examples",
             sources: ["ANSIColorExample.swift"]
+        ),
+        .executableTarget(
+            name: "SortingExamples",
+            dependencies: ["ASCIITable"],
+            path: "Examples",
+            sources: ["SortingExamples.swift"]
         ),
         .testTarget(
             name: "ASCIITableTests",

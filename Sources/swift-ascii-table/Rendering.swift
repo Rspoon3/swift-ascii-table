@@ -56,6 +56,45 @@ struct TableRenderer {
         return parts.joined()
     }
 
+    /// Returns rows sorted according to configuration
+    private func sortedRows() -> [[String]] {
+        // Check if sorting is configured
+        guard let sortOption = config.sortOption,
+              case let .by(column: sortColumn, order: sortOrder, transform: transform) = sortOption else {
+            return rows
+        }
+
+        // Find the index of the sort column
+        guard let sortIndex = columns.firstIndex(of: sortColumn) else {
+            // Column not found - return unsorted
+            #if DEBUG
+            print("Warning: Sort column '\(sortColumn)' not found in table columns")
+            #endif
+            return rows
+        }
+
+        // Handle empty rows
+        guard !rows.isEmpty else {
+            return rows
+        }
+
+        // Apply sorting
+        let sorted = rows.sorted { row1, row2 in
+            // Extract sort values (handle short rows)
+            let value1 = sortIndex < row1.count ? row1[sortIndex] : ""
+            let value2 = sortIndex < row2.count ? row2[sortIndex] : ""
+
+            // Apply custom transformation if provided
+            let sortValue1 = transform?(value1) ?? value1
+            let sortValue2 = transform?(value2) ?? value2
+
+            // Compare based on sort order
+            return sortOrder == .ascending ? sortValue1 < sortValue2 : sortValue1 > sortValue2
+        }
+
+        return sorted
+    }
+
     /// Renders a single row (header or data) with proper alignment and padding.
     func renderRow(_ rowData: [String], widths: [Int]) -> String {
         var parts: [String] = []
@@ -98,6 +137,7 @@ struct TableRenderer {
 
         var output: [String] = []
         let widths = computeColumnWidths()
+        let displayRows = sortedRows()
 
         // Top border
         if config.hrules != .none {
@@ -115,11 +155,11 @@ struct TableRenderer {
         }
 
         // Data rows
-        for (index, row) in rows.enumerated() {
+        for (index, row) in displayRows.enumerated() {
             output.append(renderRow(row, widths: widths))
 
             // Row separator (only if hrules is .all and not the last row)
-            if config.hrules == .all && index < rows.count - 1 {
+            if config.hrules == .all && index < displayRows.count - 1 {
                 output.append(renderHorizontalRule(widths: widths))
             }
         }

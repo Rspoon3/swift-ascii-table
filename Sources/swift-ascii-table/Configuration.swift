@@ -29,6 +29,17 @@ public enum Alignment {
     case right
 }
 
+/// Specifies the sort order for table rows.
+public enum SortOrder {
+    case ascending
+    case descending
+}
+
+/// Specifies how table rows should be sorted.
+public enum SortOption {
+    case by(column: String, order: SortOrder = .ascending, transform: ((String) -> String)? = nil)
+}
+
 /// Configuration options for table rendering.
 struct TableConfiguration {
     /// Whether to display table borders
@@ -56,4 +67,7 @@ struct TableConfiguration {
     var horizontalChar: Character = "-"
     var verticalChar: Character = "|"
     var junctionChar: Character = "+"
+
+    /// Sorting configuration (nil = no sorting, original order)
+    var sortOption: SortOption? = nil
 }

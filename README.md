@@ -5,6 +5,7 @@ A lightweight, plug-and-play Swift package for rendering ASCII tables in CLI app
 ## Features
 
 - ✅ Simple, fluent API with method chaining
+- ✅ Sorting support with custom transforms (numeric, case-insensitive, etc.)
 - ✅ Unicode support (proper handling of CJK characters, emoji, combining marks)
 - ✅ Flexible alignment (left, center, right) per column or globally
 - ✅ Configurable borders and rules (horizontal and vertical)
@@ -157,6 +158,79 @@ Output:
 +---------+---------+
 ```
 
+### Sorting
+
+```swift
+// Basic alphabetical sorting
+let table = ASCIITable(columns: ["Name", "Age", "City"])
+    .addRow(["Charlie", "35", "NYC"])
+    .addRow(["Alice", "30", "SF"])
+    .addRow(["Bob", "25", "LA"])
+    .sort(.by(column: "Name"))
+
+print(table.render())
+```
+
+Output:
+```
++---------+-----+------+
+| Name    | Age | City |
++---------+-----+------+
+| Alice   | 30  | SF   |
+| Bob     | 25  | LA   |
+| Charlie | 35  | NYC  |
++---------+-----+------+
+```
+
+```swift
+// Numeric sorting with transform
+let table = ASCIITable(columns: ["Name", "Age"])
+    .addRow(["Alice", "30"])
+    .addRow(["Bob", "5"])
+    .addRow(["Charlie", "100"])
+    .sort(.by(column: "Age", transform: { str in
+        if let num = Int(str) {
+            return String(format: "%05d", num)
+        }
+        return str
+    }))
+
+print(table.render())
+```
+
+Output:
+```
++---------+-----+
+| Name    | Age |
++---------+-----+
+| Bob     | 5   |
+| Alice   | 30  |
+| Charlie | 100 |
++---------+-----+
+```
+
+```swift
+// Descending sort
+let table = ASCIITable(columns: ["Name", "Score"])
+    .addRow(["Alice", "95"])
+    .addRow(["Bob", "87"])
+    .addRow(["Charlie", "92"])
+    .sort(.by(column: "Score", order: .descending))
+
+print(table.render())
+```
+
+Output:
+```
++---------+-------+
+| Name    | Score |
++---------+-------+
+| Alice   | 95    |
+| Charlie | 92    |
+| Bob     | 87    |
++---------+-------+
+```
+
 ## API Reference
 
 ### Initialization
@@ -177,6 +251,7 @@ All methods return `Self` for method chaining.
 - `padding(_ width: Int) -> Self` - Set cell padding width
 - `header(_ show: Bool) -> Self` - Show/hide header row
 - `alignment(_ align: Alignment, for column: String?) -> Self` - Set alignment
+- `sort(_ option: SortOption) -> Self` - Sort table rows by column
 
 ### Enums
 
@@ -196,6 +271,13 @@ All methods return `Self` for method chaining.
 - `.center` - Centered text
 - `.right` - Right-aligned text
 
+#### SortOrder
+- `.ascending` - Sort in ascending order (default)
+- `.descending` - Sort in descending order
+
+#### SortOption
+- `.by(column: String, order: SortOrder = .ascending, transform: ((String) -> String)? = nil)` - Sort by column with optional order and transform function
+
 ### Rendering
 
 ```swift
@@ -210,6 +292,8 @@ The package includes several example scripts demonstrating different features:
 
 ```bash
 # Run the examples
+swift run SortingExamples          # Sorting with various options
+swift run ANSIColorExample         # ANSI color support
 swift Examples/BasicExamples.swift      # Basic tables and common patterns
 swift Examples/AlignmentExamples.swift  # Left, center, right alignment
 swift Examples/UnicodeExamples.swift    # Emoji, CJK, and international text

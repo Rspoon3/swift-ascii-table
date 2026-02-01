@@ -262,3 +262,171 @@ struct ASCIITableTests {
         #expect("Hello".padded(to: 5, alignment: .left) == "Hello")
     }
 }
+
+@Suite("Sorting Tests")
+struct SortingTests {
+
+    @Test("Sort by column - ascending")
+    func sortAscending() {
+        let table = ASCIITable(columns: ["Name", "Age"])
+            .addRow(["Charlie", "35"])
+            .addRow(["Alice", "30"])
+            .addRow(["Bob", "25"])
+            .sort(.by(column: "Name"))
+
+        let output = table.render()
+        let lines = output.components(separatedBy: "\n")
+        let aliceIndex = lines.firstIndex { $0.contains("Alice") }!
+        let bobIndex = lines.firstIndex { $0.contains("Bob") }!
+        let charlieIndex = lines.firstIndex { $0.contains("Charlie") }!
+
+        #expect(aliceIndex < bobIndex)
+        #expect(bobIndex < charlieIndex)
+    }
+
+    @Test("Sort by column - descending")
+    func sortDescending() {
+        let table = ASCIITable(columns: ["Name", "Age"])
+            .addRow(["Alice", "30"])
+            .addRow(["Bob", "25"])
+            .addRow(["Charlie", "35"])
+            .sort(.by(column: "Age", order: .descending))
+
+        let output = table.render()
+        let lines = output.components(separatedBy: "\n")
+
+        // Lexicographic descending: "35" > "30" > "25"
+        let charlieIndex = lines.firstIndex { $0.contains("Charlie") }!
+        let aliceIndex = lines.firstIndex { $0.contains("Alice") }!
+        let bobIndex = lines.firstIndex { $0.contains("Bob") }!
+
+        #expect(charlieIndex < aliceIndex)
+        #expect(aliceIndex < bobIndex)
+    }
+
+    @Test("Sort with custom transform - numeric")
+    func sortNumeric() {
+        let table = ASCIITable(columns: ["Name", "Age"])
+            .addRow(["Alice", "30"])
+            .addRow(["Bob", "5"])
+            .addRow(["Charlie", "100"])
+            .sort(.by(column: "Age", transform: { str in
+                // Zero-pad numbers for correct string comparison
+                if let num = Int(str) {
+                    return String(format: "%05d", num)
+                }
+                return str
+            }))
+
+        let output = table.render()
+        let lines = output.components(separatedBy: "\n")
+
+        // Numeric order: 5, 30, 100 (not lexicographic: 100, 30, 5)
+        let bobIndex = lines.firstIndex { $0.contains("Bob") }!
+        let aliceIndex = lines.firstIndex { $0.contains("Alice") }!
+        let charlieIndex = lines.firstIndex { $0.contains("Charlie") }!
+
+        #expect(bobIndex < aliceIndex)
+        #expect(aliceIndex < charlieIndex)
+    }
+
+    @Test("Sort with custom transform - case insensitive")
+    func sortCaseInsensitive() {
+        let table = ASCIITable(columns: ["Name"])
+            .addRow(["banana"])
+            .addRow(["Apple"])
+            .addRow(["cherry"])
+            .sort(.by(column: "Name", transform: { $0.lowercased() }))
+
+        let output = table.render()
+        let lines = output.components(separatedBy: "\n")
+
+        let appleIndex = lines.firstIndex { $0.contains("Apple") }!
+        let bananaIndex = lines.firstIndex { $0.contains("banana") }!
+        let cherryIndex = lines.firstIndex { $0.contains("cherry") }!
+
+        #expect(appleIndex < bananaIndex)
+        #expect(bananaIndex < cherryIndex)
+    }
+
+    @Test("Sort by invalid column")
+    func sortInvalidColumn() {
+        let table = ASCIITable(columns: ["Name", "Age"])
+            .addRow(["Alice", "30"])
+            .addRow(["Bob", "25"])
+            .sort(.by(column: "NonexistentColumn"))
+
+        let output = table.render()
+
+        // Should render without crashing, in original order
+        let lines = output.components(separatedBy: "\n")
+        let aliceIndex = lines.firstIndex { $0.contains("Alice") }!
+        let bobIndex = lines.firstIndex { $0.contains("Bob") }!
+        #expect(aliceIndex < bobIndex)
+    }
+
+    @Test("Sort empty table")
+    func sortEmptyTable() {
+        let table = ASCIITable(columns: ["Name", "Age"])
+            .sort(.by(column: "Name"))
+
+        let output = table.render()
+        #expect(output.contains("Name"))
+        #expect(output.contains("Age"))
+    }
+
+    @Test("No sort option - original order")
+    func noSort() {
+        let table = ASCIITable(columns: ["Name"])
+            .addRow(["Charlie"])
+            .addRow(["Alice"])
+            // Don't call .sort() at all
+
+        let output = table.render()
+        let lines = output.components(separatedBy: "\n")
+
+        // Original order preserved
+        let charlieIndex = lines.firstIndex { $0.contains("Charlie") }!
+        let aliceIndex = lines.firstIndex { $0.contains("Alice") }!
+        #expect(charlieIndex < aliceIndex)
+    }
+
+    @Test("Sort maintains Unicode alignment")
+    func sortUnicode() {
+        let table = ASCIITable(columns: ["Name", "Emoji"])
+            .addRow(["Charlie", "😢"])
+            .addRow(["Alice", "😀"])
+            .sort(.by(column: "Name"))
+
+        let output = table.render()
+        let lines = output.components(separatedBy: "\n")
+
+        // Check sorted order
+        let aliceIndex = lines.firstIndex { $0.contains("Alice") }!
+        let charlieIndex = lines.firstIndex { $0.contains("Charlie") }!
+        #expect(aliceIndex < charlieIndex)
+
+        // Check alignment is maintained
+        let aliceLine = lines[aliceIndex]
+        let charlieLine = lines[charlieIndex]
+        #expect(aliceLine.count == charlieLine.count)
+    }
+
+    @Test("Method chaining with sorting")
+    func sortMethodChaining() {
+        let output = ASCIITable(columns: ["Name", "Age"])
+            .addRow(["Bob", "25"])
+            .addRow(["Alice", "30"])
+            .sort(.by(column: "Name", order: .ascending))
+            .border(true)
+            .padding(2)
+            .alignment(.center)
+            .render()
+
+        #expect(!output.isEmpty)
+        let lines = output.components(separatedBy: "\n")
+        let aliceIndex = lines.firstIndex { $0.contains("Alice") }!
+        let bobIndex = lines.firstIndex { $0.contains("Bob") }!
+        #expect(aliceIndex < bobIndex)
+    }
+}

@@ -111,6 +111,31 @@ public class ASCIITable {
         return self
     }
 
+    /// Sets the sorting option for table rows.
+    ///
+    /// - Parameter option: The sort configuration to apply.
+    /// - Returns: Self for method chaining.
+    ///
+    /// Example usage:
+    /// ```swift
+    /// // Sort by name ascending (default)
+    /// .sort(.by(column: "Name"))
+    ///
+    /// // Sort by age descending
+    /// .sort(.by(column: "Age", order: .descending))
+    ///
+    /// // Sort numerically
+    /// .sort(.by(column: "Age", order: .ascending, transform: { str in
+    ///     if let num = Int(str) { return String(format: "%05d", num) }
+    ///     return str
+    /// }))
+    /// ```
+    @discardableResult
+    public func sort(_ option: SortOption) -> Self {
+        config.sortOption = option
+        return self
+    }
+
     /// Renders the table as an ASCII string.
     ///
     /// - Returns: The formatted ASCII table.
