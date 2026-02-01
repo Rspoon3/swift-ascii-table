@@ -40,7 +40,9 @@ extension String {
                (0xFE10...0xFE1F).contains(value) || (0xFE30...0xFE4F).contains(value) ||
                (0xFF00...0xFF60).contains(value) || (0xFFE0...0xFFE6).contains(value) {
                 width += 2
-            } else if scalar.properties.isNoncharacterCodePoint {
+            } else if scalar.properties.isNoncharacterCodePoint ||
+                    (0xFE00...0xFE0F).contains(value) ||
+                    (0x200B...0x200D).contains(value) {
                 width += 0
             } else if (0x1F300...0x1F9FF).contains(value) ||
                     (0x2600...0x26FF).contains(value) ||

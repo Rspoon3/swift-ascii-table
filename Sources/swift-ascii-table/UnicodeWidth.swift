@@ -36,8 +36,10 @@ extension String {
                (0xFFE0...0xFFE6).contains(value) {       // Fullwidth Forms
                 width += 2
             }
-            // Check for combining marks and zero-width characters
-            else if scalar.properties.isNoncharacterCodePoint {
+            // Check for combining marks, variation selectors, and zero-width characters
+            else if scalar.properties.isNoncharacterCodePoint ||
+                    (0xFE00...0xFE0F).contains(value) ||  // Variation Selectors
+                    (0x200B...0x200D).contains(value) {   // Zero Width Joiner, etc.
                 width += 0
             }
             // Emoji ranges - various Unicode blocks containing emoji
