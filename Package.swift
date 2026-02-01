@@ -13,6 +13,10 @@ let package = Package(
             name: "ASCIITable",
             targets: ["ASCIITable"]
         ),
+        .executable(
+            name: "ANSIColorExample",
+            targets: ["ANSIColorExample"]
+        ),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-testing.git", branch: "main")
@@ -21,6 +25,12 @@ let package = Package(
         .target(
             name: "ASCIITable",
             path: "Sources/swift-ascii-table"
+        ),
+        .executableTarget(
+            name: "ANSIColorExample",
+            dependencies: ["ASCIITable"],
+            path: "Examples",
+            sources: ["ANSIColorExample.swift"]
         ),
         .testTarget(
             name: "ASCIITableTests",

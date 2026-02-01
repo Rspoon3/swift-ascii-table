@@ -1,11 +1,27 @@
 import Foundation
 
 extension String {
+    /// Strips ANSI escape codes from the string.
+    /// Returns the string without any ANSI color or formatting codes.
+    var strippingANSI: String {
+        // Pattern matches ANSI escape sequences: ESC [ <params> <command>
+        // where ESC is \u{001B}, params are numbers/semicolons, and command is a letter
+        let ansiPattern = "\\u{001B}\\[[0-9;]*[A-Za-z]"
+        guard let regex = try? NSRegularExpression(pattern: ansiPattern, options: []) else {
+            return self
+        }
+        let range = NSRange(location: 0, length: utf16.count)
+        return regex.stringByReplacingMatches(in: self, options: [], range: range, withTemplate: "")
+    }
+
     /// Calculates the display width of a string, accounting for Unicode characters
     /// that occupy more or less than one character cell (e.g., CJK characters, emoji, combining marks).
+    /// ANSI escape codes are stripped before calculating width.
     var displayWidth: Int {
+        // Strip ANSI codes before calculating width
+        let cleanString = self.strippingANSI
         var width = 0
-        for scalar in unicodeScalars {
+        for scalar in cleanString.unicodeScalars {
             let value = scalar.value
 
             // CJK Unified Ideographs and other wide characters
@@ -62,8 +78,9 @@ extension String {
 
     /// Pads the string to the specified width using the given alignment.
     /// Uses displayWidth to account for Unicode characters that may occupy more than one cell.
+    /// ANSI escape codes are preserved in the output but not counted in width calculations.
     func padded(to width: Int, alignment: Alignment) -> String {
-        let currentWidth = self.displayWidth
+        let currentWidth = self.displayWidth // displayWidth already strips ANSI internally
         guard currentWidth < width else { return self }
         let padding = width - currentWidth
 
