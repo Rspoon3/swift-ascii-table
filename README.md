@@ -218,6 +218,23 @@ swift Examples/BorderExamples.swift     # Border and rule configurations
 
 See [Examples/README.md](Examples/README.md) for more details.
 
+## Known Limitations
+
+### Emoji Width Inconsistency
+
+**Emoji widths are renderer-dependent** and will vary across terminals, fonts, and platforms. While this library attempts to calculate display widths for common emoji (counting most as 2 cells), the actual rendering is controlled by your terminal emulator and font.
+
+**Problem characters:**
+- ⚠️ (U+26A0 + U+FE0F) - Warning with emoji presentation
+- Other Miscellaneous Symbols (U+2600-U+26FF) with variation selectors
+
+**For reliable alignment in CLI tables**, prefer text symbols over emoji:
+- ✓ (U+2713) instead of ✅
+- ! or ⚠ (U+26A0 without U+FE0F) instead of ⚠️
+- → instead of ➡️
+
+**Why?** Emoji glyphs are ~1em × 1em squares that don't follow monospace rules, even in monospace fonts. Width calculation is an approximation.
+
 ## Requirements
 
 - Swift 6.2+
