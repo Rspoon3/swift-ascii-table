@@ -5,8 +5,8 @@ extension String {
     /// Returns the string without any ANSI color or formatting codes.
     var strippingANSI: String {
         // Pattern matches ANSI escape sequences: ESC [ <params> <command>
-        // where ESC is \u{001B}, params are numbers/semicolons, and command is a letter
-        let ansiPattern = "\\u{001B}\\[[0-9;]*[A-Za-z]"
+        // where ESC is the escape character (0x1B), params are numbers/semicolons, and command is a letter
+        let ansiPattern = "\u{001B}\\[[0-9;]*[A-Za-z]"
         guard let regex = try? NSRegularExpression(pattern: ansiPattern, options: []) else {
             return self
         }
