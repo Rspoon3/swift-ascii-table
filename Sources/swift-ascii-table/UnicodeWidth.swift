@@ -42,15 +42,16 @@ extension String {
                     (0x200B...0x200D).contains(value) {   // Zero Width Joiner, etc.
                 width += 0
             }
-            // Emoji ranges - various Unicode blocks containing emoji
+            // Emoji ranges - only true emoji characters that are always 2 cells wide
             else if (0x1F300...0x1F9FF).contains(value) ||  // Emoticons, symbols, pictographs
-                    (0x2600...0x26FF).contains(value) ||    // Miscellaneous Symbols (⚠️, ☀️, etc.)
-                    (0x2700...0x27BF).contains(value) ||    // Dingbats
+                    (0x2700...0x27BF).contains(value) ||    // Dingbats (✅, ✔️, ❌, etc.)
                     (0x1F000...0x1F02F).contains(value) ||  // Mahjong tiles, Domino tiles
                     (0x1F0A0...0x1F0FF).contains(value) ||  // Playing cards
                     (0x1FA00...0x1FAFF).contains(value) {   // Extended pictographs
                 width += 2
             }
+            // Miscellaneous Symbols (⚠, ☀, ⭐) are 1 cell - NOT 2
+            // These are text symbols, not emoji, even with variation selectors
             // Standard ASCII and most other characters
             else {
                 width += 1

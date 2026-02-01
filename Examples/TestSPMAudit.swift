@@ -45,7 +45,6 @@ extension String {
                     (0x200B...0x200D).contains(value) {
                 width += 0
             } else if (0x1F300...0x1F9FF).contains(value) ||
-                    (0x2600...0x26FF).contains(value) ||
                     (0x2700...0x27BF).contains(value) ||
                     (0x1F000...0x1F02F).contains(value) ||
                     (0x1F0A0...0x1F0FF).contains(value) ||
@@ -164,6 +163,7 @@ table.addRow(["swift-clocks", "Unknown", "1.0.6", "5.9", "1.0.6", "✅ Up to dat
 table.addRow(["swift-collections", "Unknown", "1.3.0", "6.2", "1.3.0", "✅ Up to date", "✅", "MIT", "❌", "❌"])
 table.addRow(["swift-concurrency-extras", "Unknown", "1.3.2", "5.9", "1.3.2", "✅ Up to date", "✅", "MIT", "❌", "❌"])
 table.addRow(["swift-custom-dump", "Unknown", "1.3.4", "6.0", "1.4.1", "⚠️  Update available", "✅", "MIT", "❌", "❌"])
+table.addRow(["swift-custom-dump", "Test", "1.3.4", "6.0", "1.4.1", "✅  Update available", "✅", "MIT", "❌", "❌"])
 table.addRow(["swift-dependencies", "Unknown", "1.10.1", "6.0", "1.10.1", "✅ Up to date", "✅", "MIT", "❌", "❌"])
 table.addRow(["swift-identified-collections", "Unknown", "1.1.1", "5.9", "1.1.1", "✅ Up to date", "✅", "MIT", "❌", "❌"])
 table.addRow(["swift-perception", "Unknown", "2.0.9", "6.0", "2.0.9", "✅ Up to date", "✅", "MIT", "❌", "❌"])
