@@ -1,6 +1,6 @@
 # swift-ascii-table
 
-A lightweight, plug-and-play Swift package for rendering ASCII tables in CLI applications. Based on Python's prettytable library, focused exclusively on ASCII output with a Swift-idiomatic API.
+A lightweight, plug-and-play Swift package for rendering ASCII tables in CLI applications. Based on Python's [prettytable](https://github.com/prettytable/prettytable) library, focused exclusively on ASCII output with a Swift-idiomatic API.
 
 ## Features
 
